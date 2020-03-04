@@ -49,17 +49,18 @@ int main(int argc, char *argv[])
         QCoreApplication::exit();
         return -1;
     }
-
+    DescribeDomainRecords mDescribeDomainRecords;
     if (parser.isSet("r")) {
-        DescribeDomainRecords mDescribeDomainRecords;
+
         mDescribeDomainRecords.setAccessKeyId(confHelper.accessKeyId());
         mDescribeDomainRecords.setAccessKeySecret(confHelper.accessKeySecret());
         mDescribeDomainRecords.setDomain(confHelper.domain());
         mDescribeDomainRecords.doIt();
-    }
 
+    }
+    UpdateDomainRecord mUpdateDomainRecord;
     if (parser.isSet("w")) {
-        UpdateDomainRecord mUpdateDomainRecord;
+
         mUpdateDomainRecord.setAccessKeyId(confHelper.accessKeyId());
         mUpdateDomainRecord.setAccessKeySecret(confHelper.accessKeySecret());
         mUpdateDomainRecord.setDomain(confHelper.domain());
