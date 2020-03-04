@@ -7,6 +7,28 @@
 #include "UpdateDomainRecord.h"
 #include "ConfigHelper.h"
 
+#define DESCRIPTION "\
+This is a Read and Write Aliyun DNS's Tool. Configure file DrDDNS-Ali.conf as following: \n\
+{ \n\
+    \"LastIP\": \"your WAN ip\", \n\
+    \"AccessKeyId\": \"your Aliyun Access Id\", \n\
+    \"AccessKeySecret\": \"your Aliyun Access Key Secret\", \n\
+    \"Domain\": \"your domain\", \n\
+    \"DomainRecords\": [ \n\
+        { \n\
+            \"RR\":\"www\", \n\
+            \"RecordId\":\"3559582367551488\", \n\
+            \"Type\":\"A\" \n\
+        }, \n\
+        { \n\
+            \"RR\":\"www\", \n\
+            \"RecordId\":\"3559582367551488\", \n\
+            \"Type\":\"A\" \n\
+        } \n\
+    ] \n\
+} \n\""
+
+
 using namespace AliyunNameSpace;
 
 int main(int argc, char *argv[])
@@ -17,7 +39,7 @@ int main(int argc, char *argv[])
     QCoreApplication::setApplicationVersion("0.1.0");  // 应用版本号
 
     QCommandLineParser parser;
-    parser.setApplicationDescription(QCoreApplication::translate("main", "Qt"));  // 设置应用程序描述信息
+    parser.setApplicationDescription(QCoreApplication::translate("main", DESCRIPTION));  // 设置应用程序描述信息
 
     parser.addHelpOption();  // 添加帮助选项 （"-h" 或 "--help"）
     parser.addVersionOption();  // 添加版本选项 ("-v" 或 "--version")
