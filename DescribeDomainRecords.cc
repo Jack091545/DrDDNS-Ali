@@ -30,7 +30,6 @@ void DescribeDomainRecords::onNetworkFinished()
          QCoreApplication::exit();
          return;
     }
-
     QJsonArray array = doc.object()["DomainRecords"].
             toObject()["Record"].toArray();
     std::cout << (QString("%1 %2 %3 %4 %5 %6 %7 %8 %9")

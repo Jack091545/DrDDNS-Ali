@@ -5,6 +5,7 @@
 #include "Aliyun.h"
 #include "DescribeDomainRecords.h"
 #include "UpdateDomainRecord.h"
+#include "DeleteDomainRecord.h"
 #include "ConfigHelper.h"
 
 #define DESCRIPTION "\
@@ -26,7 +27,7 @@ This is a Read and Write Aliyun DNS's Tool. Configure file DrDDNS-Ali.conf as fo
             \"Type\":\"A\" \n\
         } \n\
     ] \n\
-} \n\""
+} \n"
 
 
 using namespace AliyunNameSpace;
@@ -52,18 +53,11 @@ int main(int argc, char *argv[])
                                    QCoreApplication::translate("main", "Write DNS records to current domain."));
     parser.addOption(writeOption);
 
+    QCommandLineOption deleteOption(QStringList() << "d" << "delete",
+                                   QCoreApplication::translate("main", "Delete DNS records from current domain's records."), "recordId");
+    parser.addOption(deleteOption);
+
     parser.process(a);
-
-
-    if (parser.isSet("r") && parser.isSet("w")) {
-        std::cout << QString("Error : Read is not allowed when Wite, please read help by -h.").toStdString() << std::endl;
-        return -1;
-    }
-
-    if (!parser.isSet("r") && !parser.isSet("w")) {
-        std::cout << QString("Error : Read or Wite is not set, please read help by -h.").toStdString() << std::endl;
-        return -1;
-    }
 
     /* 读取配置文件 */
     ConfigHelper confHelper;
@@ -82,12 +76,20 @@ int main(int argc, char *argv[])
     }
     UpdateDomainRecord mUpdateDomainRecord;
     if (parser.isSet("w")) {
-
         mUpdateDomainRecord.setAccessKeyId(confHelper.accessKeyId());
         mUpdateDomainRecord.setAccessKeySecret(confHelper.accessKeySecret());
         mUpdateDomainRecord.setDomain(confHelper.domain());
         mUpdateDomainRecord.setDomainRecords(confHelper.domainRecords());
         mUpdateDomainRecord.doIt();
+    }
+
+    DeleteDomainRecord mDeleteDomainRecord;
+    if (parser.isSet("d")) {
+        mDeleteDomainRecord.setAccessKeyId(confHelper.accessKeyId());
+        mDeleteDomainRecord.setAccessKeySecret(confHelper.accessKeySecret());
+        mDeleteDomainRecord.setDomain(confHelper.domain());
+        mDeleteDomainRecord.setRecordId(parser.value("d"));
+        mDeleteDomainRecord.doIt();
     }
 
     return a.exec();

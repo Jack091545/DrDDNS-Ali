@@ -18,6 +18,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
         Aliyun.cc \
         ConfigHelper.cc \
+        DeleteDomainRecord.cc \
         DescribeDomainRecords.cc \
         IfConfig.cc \
         UpdateDomainRecord.cc \
@@ -31,6 +32,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     Aliyun.h \
     ConfigHelper.h \
+    DeleteDomainRecord.h \
     DescribeDomainRecords.h \
     IfConfig.h \
     UpdateDomainRecord.h

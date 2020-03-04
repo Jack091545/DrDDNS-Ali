@@ -1,18 +1,19 @@
-#ifndef DESCRIBEDOMAINRECORDS_H
-#define DESCRIBEDOMAINRECORDS_H
+#ifndef DELETEDOMAINRECORD_H
+#define DELETEDOMAINRECORD_H
 
 #include "Aliyun.h"
 
 ALI_CLOUD_DNS_NAMESPACE_BEGAIN
 
-class DescribeDomainRecords : public Aliyun
+class DeleteDomainRecord : public Aliyun
 {
 public:
-    explicit DescribeDomainRecords(QObject *parent = nullptr);
-
+    explicit DeleteDomainRecord(QObject *parent = nullptr);
+    void setRecordId(const QString &recordId);
     void doIt();
 
-
+private:
+    QString mRecordId;
 private slots:
     void onNetworkReadReady();
     void onNetworkFinished();

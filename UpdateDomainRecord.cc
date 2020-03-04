@@ -31,11 +31,6 @@ void UpdateDomainRecord::onIpGrabFinished()
         return;
     }
 
-    if(!mConfHelper.setLastIP(mIfConf.ip())) {
-        QCoreApplication::exit(-1);
-        return;
-    }
-
     QUrlQuery urlQ = publicRequest();
     urlQ.addQueryItem("Action", "UpdateDomainRecord");
     urlQ.addQueryItem("DomainName", mDomian);
@@ -51,7 +46,6 @@ void UpdateDomainRecord::onIpGrabFinished()
 
     /* 获取Signature */
     QString prevString = stringPrevSign(urlQ);
-    qDebug() << prevString;
     QString hash = hmacSha1((mAccessKeySecret + "&").toUtf8() , prevString.toUtf8());
     /* 组成完整的url */
     urlQ.addQueryItem("Signature", QUrl::toPercentEncoding(hash));
@@ -86,7 +80,6 @@ void UpdateDomainRecord::onNetworkReadReady()
 
 void UpdateDomainRecord::onNetworkFinished()
 {
-    qDebug() << mNetworkData;
     QJsonParseError jsonParseError;
     QJsonDocument doc = \
             QJsonDocument::fromJson(mNetworkData, &jsonParseError);
@@ -94,6 +87,7 @@ void UpdateDomainRecord::onNetworkFinished()
          QCoreApplication::exit();
          return;
     }
+
     std::cout << (QString("%1 %2")
                         .arg("RecordId",12)
                         .arg("RequestId", 8)).toStdString() << std::endl;
@@ -102,8 +96,13 @@ void UpdateDomainRecord::onNetworkFinished()
                         .arg(doc.object()["RequestId"].toString(), 8)).toStdString() << std::endl;
     if(mRecords.count() > 0)
         doIt();
-    else
+    else {
+        if(!mConfHelper.setLastIP(mIfConf.ip())) {
+            QCoreApplication::exit(-1);
+            return;
+        }
         QCoreApplication::exit();
+    }
 }
 
 void UpdateDomainRecord::onNetworkError(QNetworkReply::NetworkError errorCode)
