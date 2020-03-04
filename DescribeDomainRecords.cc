@@ -85,7 +85,6 @@ void DescribeDomainRecords::doIt()
 
     QNetworkRequest request;
     request.setUrl("http:" + url.toString());
-    qDebug() << "http:" + url.toString();
     request.setHeader(QNetworkRequest::ContentTypeHeader, QVariant("application/x-www-form-urlencoded"));
     mNetworkData.clear();
     mNetworkReply = mNetWorkAccessManager.get(request);
