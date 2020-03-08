@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QDir>
 #include <iostream>
 
 
@@ -12,21 +13,31 @@ ConfigHelper::ConfigHelper(QObject *parent) : QObject(parent)
 
 }
 
-
+/* 加载配置文件 */
 bool ConfigHelper::load()
 {
-    QFile file(QCoreApplication::applicationDirPath() + "/DrDDNS-Ali.conf");
+    /* 检查文件夹是否存在，不存在则创建 */
+    QDir configDir(QDir::homePath() + "/.config");
+    if (!configDir.exists())
+        configDir.mkdir(QDir::homePath() + "/.config");
+
+    /* 检查配置文件是否存在，不存在就创建 */
+    QByteArray confData;
+    QFile file(QDir::homePath() + "/.config/DrDDNS-Ali.conf");
     if (!file.exists()) {
-        std::cout << QString::fromUtf8("ConfigHelper Error: file not found.").toStdString() << std::endl;
-        return false;
+        file.open(QIODevice::WriteOnly);
+        file.write("{\"WAN-IP\":\"\"}");
+        file.close();
+        confData = QByteArray("{\"WAN-IP\":\"\"}");
+    } else {
+        if (!file.open(QIODevice::ReadOnly)) {
+            std::cout << QString::fromUtf8("ConfigHelper Error: file can not open.").toStdString() << std::endl;
+            return false;
+        }
+        confData = file.readAll();
+        file.close();
     }
 
-    if (!file.open(QIODevice::ReadWrite)) {
-        std::cout << QString::fromUtf8("ConfigHelper Error: file can not open.").toStdString() << std::endl;
-        return false;
-    }
-    QByteArray confData = file.readAll();
-    file.close();
     QJsonParseError parseError;
     QJsonDocument doc = QJsonDocument::fromJson(confData, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
@@ -56,15 +67,15 @@ QString ConfigHelper::domain()
 
 
 
-QString ConfigHelper::lastIP()
+QString ConfigHelper::WANIP()
 {
-    return mConf["LastIP"].toString();
+    return mConf["WAN-IP"].toString();
 }
 
-bool ConfigHelper::setLastIP(const QString &ip)
+bool ConfigHelper::setWANIP(const QString &ip)
 {
-    mConf["LastIP"] = ip;
-    QFile file(QCoreApplication::applicationDirPath() + "/DrDDNS-Ali.conf");
+    mConf["WAN-IP"] = ip;
+    QFile file(QDir::homePath() + "/.config/DrDDNS-Ali.conf");
     if (!file.exists()) {
         std::cout << QString::fromUtf8("ConfigHelper Error: file not found.").toStdString() << std::endl;
         return false;
@@ -81,8 +92,6 @@ bool ConfigHelper::setLastIP(const QString &ip)
     file.close();
     return true;
 }
-
-
 
 QList<QMap<QString, QString>> ConfigHelper::domainRecords()
 {

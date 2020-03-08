@@ -51,13 +51,12 @@ void DeleteDomainRecord::onNetworkError(QNetworkReply::NetworkError errorCode)
     qWarning() << "DeleteDomainRecord Error: " + mNetworkReply->errorString();
 }
 
-/* 读取当前的DNS解析记录 */
+/* 删除DNS解析记录 */
 void DeleteDomainRecord::doIt()
 {
     QUrlQuery urlQ = publicRequest();
     urlQ.addQueryItem("Action", "DeleteDomainRecord");
     urlQ.addQueryItem("RecordId", mRecordId);
-
     /* 获取Signature */
     QString prevString = stringPrevSign(urlQ);
     QString hash = hmacSha1((mAccessKeySecret + "&").toUtf8() , prevString.toUtf8());

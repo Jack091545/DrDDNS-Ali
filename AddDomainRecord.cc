@@ -1,4 +1,4 @@
-#include "UpdateDomainRecord.h"
+#include "AddDomainRecord.h"
 #include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonParseError>
@@ -10,42 +10,27 @@
 ALI_CLOUD_DNS_NAMESPACE_BEGAIN
 
 
-UpdateDomainRecord::UpdateDomainRecord(QObject *parent) : Aliyun(parent)
+AddDomainRecord::AddDomainRecord(QObject *parent) : Aliyun(parent)
 {
-    connect(&mIfConf, &IfConfig::grabFinished, this, &UpdateDomainRecord::onIpGrabFinished);
+    connect(&mIfConf, &IfConfig::grabFinished, this, &AddDomainRecord::onIpGrabFinished);
 
 }
 
 
 
-void UpdateDomainRecord::onIpGrabFinished()
+void AddDomainRecord::onIpGrabFinished()
 {
-    /* 如果是已经同步过了的ip，则不同步 */
-    if(!mConfHelper.load()) {
-        QCoreApplication::exit(-1);
-        return;
-    }
-
     QUrlQuery urlQ = publicRequest();
-    urlQ.addQueryItem("Action", "UpdateDomainRecord");
+    urlQ.addQueryItem("Action", "AddDomainRecord");
     urlQ.addQueryItem("DomainName", mDomian);
 
     /* 取出record */
     QMap<QString, QString> map = mRecords.dequeue();
     urlQ.addQueryItem("RR", QUrl::toPercentEncoding(map["RR"]));
-    urlQ.addQueryItem("RecordId", map["RecordId"]);
     urlQ.addQueryItem("Type", map["Type"]);
 
     /* 获取当前的ip */
     urlQ.addQueryItem("Value", (map["Value"] == "Auto") ? mIfConf.ip() : map["Value"]);
-
-    /* 自动设置WAN IP的情况下，才去对比真实的WAN IP和配置文件中的WAN IP */
-    if (map["Value"] == "Auto") {
-        if (mConfHelper.WANIP() == mIfConf.ip()) {
-            QCoreApplication::exit(-1);
-            return;
-        }
-    }
 
     /* 获取Signature */
     QString prevString = stringPrevSign(urlQ);
@@ -63,25 +48,25 @@ void UpdateDomainRecord::onIpGrabFinished()
     mNetworkData.clear();
     mNetworkReply = mNetWorkAccessManager.get(request);
 
-    connect(mNetworkReply, &QNetworkReply::readyRead, this, &UpdateDomainRecord::onNetworkReadReady);
-    connect(mNetworkReply, &QNetworkReply::finished, this, &UpdateDomainRecord::onNetworkFinished);
+    connect(mNetworkReply, &QNetworkReply::readyRead, this, &AddDomainRecord::onNetworkReadReady);
+    connect(mNetworkReply, &QNetworkReply::finished, this, &AddDomainRecord::onNetworkFinished);
     connect(mNetworkReply, static_cast<void (QNetworkReply::*)(QNetworkReply::NetworkError)>(&QNetworkReply::error), \
-        this, &UpdateDomainRecord::onNetworkError);
+        this, &AddDomainRecord::onNetworkError);
 }
 
-void UpdateDomainRecord::setDomainRecords(const QList<QMap<QString, QString>> records)
+void AddDomainRecord::setDomainRecords(const QList<QMap<QString, QString>> records)
 {
     for (int i = 0; i < records.size(); i++)
         mRecords.enqueue(records[i]);
 }
 
-void UpdateDomainRecord::onNetworkReadReady()
+void AddDomainRecord::onNetworkReadReady()
 {
     QByteArray data = mNetworkReply->readAll();
     mNetworkData.append(data);
 }
 
-void UpdateDomainRecord::onNetworkFinished()
+void AddDomainRecord::onNetworkFinished()
 {
     QJsonParseError jsonParseError;
     QJsonDocument doc = \
@@ -103,23 +88,17 @@ void UpdateDomainRecord::onNetworkFinished()
         return;
     }
 
-    /* 如果没有要设置的记录，把当前的WAN ip写入配置文件 */
-    if(!mConfHelper.setWANIP(mIfConf.ip())) {
-        QCoreApplication::exit(-1);
-        return;
-    }
     QCoreApplication::exit();
-
 }
 
-void UpdateDomainRecord::onNetworkError(QNetworkReply::NetworkError errorCode)
+void AddDomainRecord::onNetworkError(QNetworkReply::NetworkError errorCode)
 {
     Q_UNUSED(errorCode)
-    qWarning() << "UpdateDomainRecord Error: " + mNetworkReply->errorString();
+    qWarning() << "AddDomainRecord Error: " + mNetworkReply->errorString();
 }
 
 /* 读取当前的DNS解析记录 */
-void UpdateDomainRecord::doIt()
+void AddDomainRecord::doIt()
 {
     mIfConf.grab();
 }

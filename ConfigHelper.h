@@ -20,10 +20,10 @@ public:
     QString accessKeyId();
     QString accessKeySecret();
     QString domain();
-    QString lastIP();
+    QString WANIP();
     QList<QMap<QString, QString>> domainRecords();
 
-    bool setLastIP(const QString &ip);
+    bool setWANIP(const QString &ip);
 
 private:
 
