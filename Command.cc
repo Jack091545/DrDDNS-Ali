@@ -11,7 +11,7 @@ using namespace std;
 Command::Command(QObject *parent) : QObject(parent)
 {
     QCoreApplication::setApplicationName("DrDDNS-Ali");  // 应用名称
-    QCoreApplication::setApplicationVersion("0.1.1");  // 应用版本号
+    QCoreApplication::setApplicationVersion("0.1.2");  // 应用版本号
     QCoreApplication::setOrganizationName("Matsumoto.Gioomei");
     QCoreApplication::setOrganizationDomain("<Matsumoto.Gioomei@protonmail.ch>");
 

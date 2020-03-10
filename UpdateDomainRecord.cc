@@ -38,10 +38,11 @@ void UpdateDomainRecord::onIpGrabFinished()
 
     /* 获取当前的ip */
     urlQ.addQueryItem("Value", (map["Value"] == "Auto") ? mIfConf.ip() : map["Value"]);
-
+    mRecordId = map["RecordId"];
     /* 自动设置WAN IP的情况下，才去对比真实的WAN IP和配置文件中的WAN IP */
+
     if (map["Value"] == "Auto") {
-        if (mConfHelper.WANIP() == mIfConf.ip()) {
+        if (map["RecordId"] == mIfConf.ip()) {
             QCoreApplication::exit(-1);
             return;
         }
@@ -104,7 +105,7 @@ void UpdateDomainRecord::onNetworkFinished()
     }
 
     /* 如果没有要设置的记录，把当前的WAN ip写入配置文件 */
-    if(!mConfHelper.setWANIP(mIfConf.ip())) {
+    if(!mConfHelper.setIpInfo(mRecordId, mIfConf.ip())) {
         QCoreApplication::exit(-1);
         return;
     }

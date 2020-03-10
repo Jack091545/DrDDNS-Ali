@@ -16,14 +16,8 @@ public:
     /* 加载配置文件 */
     bool load();
 
-    /*  */
-    QString accessKeyId();
-    QString accessKeySecret();
-    QString domain();
-    QString WANIP();
-    QList<QMap<QString, QString>> domainRecords();
-
-    bool setWANIP(const QString &ip);
+    QString ipInfo(const QString &recordId);
+    bool setIpInfo(const QString &recordId, const QString &ip);
 
 private:
 

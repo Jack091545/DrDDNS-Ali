@@ -26,9 +26,9 @@ bool ConfigHelper::load()
     QFile file(QDir::homePath() + "/.config/DrDDNS-Ali.conf");
     if (!file.exists()) {
         file.open(QIODevice::WriteOnly);
-        file.write("{\"WAN-IP\":\"\"}");
+        file.write("{}");
         file.close();
-        confData = QByteArray("{\"WAN-IP\":\"\"}");
+        confData = QByteArray("{}");
     } else {
         if (!file.open(QIODevice::ReadOnly)) {
             std::cout << QString::fromUtf8("ConfigHelper Error: file can not open.").toStdString() << std::endl;
@@ -48,33 +48,16 @@ bool ConfigHelper::load()
     return true;
 }
 
-QString ConfigHelper::accessKeyId()
+
+
+QString ConfigHelper::ipInfo(const QString &recordId)
 {
-    return mConf["AccessKeyId"].toString();
+    return mConf[recordId].toString();
 }
 
-QString ConfigHelper::accessKeySecret()
+bool ConfigHelper::setIpInfo(const QString &recordId, const QString &ip)
 {
-    return mConf["AccessKeySecret"].toString();
-
-}
-
-
-QString ConfigHelper::domain()
-{
-    return mConf["Domain"].toString();
-}
-
-
-
-QString ConfigHelper::WANIP()
-{
-    return mConf["WAN-IP"].toString();
-}
-
-bool ConfigHelper::setWANIP(const QString &ip)
-{
-    mConf["WAN-IP"] = ip;
+    mConf[recordId] = ip;
     QFile file(QDir::homePath() + "/.config/DrDDNS-Ali.conf");
     if (!file.exists()) {
         std::cout << QString::fromUtf8("ConfigHelper Error: file not found.").toStdString() << std::endl;
@@ -93,16 +76,3 @@ bool ConfigHelper::setWANIP(const QString &ip)
     return true;
 }
 
-QList<QMap<QString, QString>> ConfigHelper::domainRecords()
-{
-    QList<QMap<QString, QString>> list;
-    QJsonArray array = mConf["DomainRecords"].toArray();
-    for (int i = 0; i < array.size(); i++) {
-        QMap<QString, QString> map;
-        map.insert("RR", array[i].toObject()["RR"].toString());
-        map.insert("RecordId", array[i].toObject()["RecordId"].toString());
-        map.insert("Type", array[i].toObject()["Type"].toString());
-        list.append(map);
-    }
-    return list;
-}

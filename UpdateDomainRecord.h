@@ -21,6 +21,7 @@ private:
     QQueue<QMap<QString, QString>> mRecords;
     IfConfig mIfConf;
     ConfigHelper mConfHelper;
+    QString mRecordId;
 private slots:
     void onNetworkReadReady();
     void onNetworkFinished();
